@@ -11,39 +11,62 @@ datasource db {
 }
 
 model user {
-  id          Int      @id @map("_id")
-  userName    String
-  email       String
-  password    String
-  phoneNumber Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  id            Int          @id @map("_id")
+  userName      String
+  email         String
+  password      String
+  phoneNumber   Int
+  profilePhoto  String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now())
+  userAddress   userAddress? @relation(fields: [userAddressId], references: [id])
+  userAddressId Int?
+  payment       payment?     @relation(fields: [paymentId], references: [id])
+  paymentId     Int?
+  order         order?       @relation(fields: [orderId], references: [id])
+  orderId       Int?
+  cart          cart?        @relation(fields: [cartId], references: [id])
+  cartId        Int?
+  product       product?     @relation(fields: [productId], references: [id])
+  productId     Int?
+  auth          auth?        @relation(fields: [authId], references: [id])
+  authId        Int?
 }
 
 model product {
-  id          Int      @id @map("_id")
-  productType String
-  productName String
-  discription String
-  amount      String
-  cart        cart?    @relation(fields: [cartId], references: [id])
-  cartId      Int?
-  payment     payment? @relation(fields: [paymentId], references: [id])
-  paymentId   Int?
-  order       order[]
+  id            Int          @id @map("_id")
+  productType   String
+  productName   String
+  discription   String
+  amount        String
+  cart          cart?        @relation(fields: [cartId], references: [id])
+  cartId        Int?
+  payment       payment?     @relation(fields: [paymentId], references: [id])
+  paymentId     Int?
+  order         order[]
+  user          user[]
+  description   description? @relation(fields: [descriptionId], references: [id])
+  descriptionId Int?
 }
 
 model cart {
   id      Int       @id @map("_id")
   product product[]
+  user    user[]
+  order   order[]
 }
 
 model order {
-  id        Int     @id @map("_id")
+  id        Int      @id @map("_id")
   amount    String
   status    String
-  product   product @relation(fields: [productId], references: [id])
+  product   product  @relation(fields: [productId], references: [id])
   productId Int
+  user      user[]
+  cart      cart?    @relation(fields: [cartId], references: [id])
+  cartId    Int?
+  payment   payment? @relation(fields: [paymentId], references: [id])
+  paymentId Int?
 }
 
 model payment {
@@ -52,6 +75,8 @@ model payment {
   paymentStatus String
   date          DateTime
   product       product[]
+  user          user[]
+  order         order[]
 }
 
 model shipment {
@@ -63,7 +88,24 @@ model shipment {
 }
 
 model userAddress {
-  id       Int        @id @map("_id")
-  address  String
-  delivery shipment[]
+  id          Int        @id @map("_id")
+  address     String
+  delivery    shipment[]
+  userAddress user[]
+}
+
+model auth {
+  id              Int      @id @map("_id")
+  userName        String
+  password        String
+  confirmPassword String
+  updatedAt       DateTime
+  createdAt       DateTime
+  user            user[]
+}
+
+model description {
+  id      Int       @id @map("_id")
+  name    String
+  product product[]
 }
